@@ -3,7 +3,7 @@
 Cached methods and initial data population for free with redis-oplog.
 
 
-##Usage
+## Usage
 ### Preload data
 For loading data directly on minimongo for each page serve, use the following:
 ```
