@@ -21,6 +21,7 @@ Package.onUse(function (api) {
 });
 Npm.depends({
   'lodash.keys': '4.2.0',
+  'redis': '3.0.2',
   'lodash.isstring': '4.0.1',
   'lodash.throttle': '4.1.1',
 });
