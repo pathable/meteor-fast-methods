@@ -1,19 +1,18 @@
 Package.describe({
   name: 'pathable:meteor-fast-methods',
   version: '0.0.1',
-  summary: '',
-  documentation: '',
+  summary: 'Faster methods with redis and redis-oplog',
 });
 
 Package.onUse(function (api) {
   api.versionsFrom('1.10.2');
-  api.use('cultofcoders:redis-oplog');
+  api.use('cultofcoders:redis-oplog@2.0.5');
   api.use('mongo');
   api.use('tracker');
   api.use('underscore');
   api.use('ecmascript');
   api.use('server-render');
-  api.use('mdg:validated-method');
+  api.use('mdg:validated-method@1.2.0');
 
   api.mainModule('server.js', 'server');
   api.mainModule('client.js', 'client');
