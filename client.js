@@ -4,7 +4,16 @@ export { CachedValidatedMethod } from './lib/cached-method';
 import './lib/override-mongo-behavior';
 import { CHANGES_METHOD_NAME, fillMiniMongo } from './lib/helpers';
 import { Mongo } from 'meteor/mongo';
+import { Tracker } from 'meteor/tracker'
 
+FastMethods = {
+  readyDependency: new Tracker.Dependency(),
+  isReady: false,
+  ready: function () {
+    this.readyDependency.depend();
+    return this.isReady;
+  },
+};
 Meteor.startup(() => {
   fillMiniMongo();
   import { Vent } from 'meteor/cultofcoders:redis-oplog';
