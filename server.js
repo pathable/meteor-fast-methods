@@ -1,5 +1,10 @@
 import redis from 'redis';
-FastMethods = {};
+import { Meteor } from 'meteor/meteor';
+import { Context } from './lib/context';
+
+FastMethods = {
+  fastMethodsContext: new Meteor.EnvironmentVariable(),
+};
 FastMethods.redisClient = redis.createClient(Meteor.settings.redisOplog.redis);
 
 import { EJSON } from 'meteor/ejson';
@@ -14,20 +19,28 @@ import './lib/mongo-collections-map';
 export { CachedValidatedMethod } from './lib/cached-method';
 export function preloadData(cursorsFunction) {
   onPageLoad(sink => {
-    const cursors = cursorsFunction(sink);
+    const loginToken = sink.request.cookies['meteor_login_token'];
 
-    cursors.forEach(cursor => {
-      Mongo.Collection.__getCollectionByName(
-        cursor._getCollectionName()
-      ).shouldEmitEvents = true;
+    const context = new Context(loginToken, { headers: sink.request.headers });
+    FastMethods.fastMethodsContext.withValue(context, function () {
+      const cursors = cursorsFunction.call(context, sink);
+
+      cursors.forEach(cursor => {
+        Mongo.Collection.__getCollectionByName(
+          cursor._getCollectionName()
+        ).shouldEmitEvents = true;
+      });
+      sink.appendToBody(
+        `<script>
+        var PRELOADED_DATA_METEOR_FAST_METHODS = ${EJSON.stringify(
+          reduceToMethodSubscriptionFormat(cursors)
+        )};
+        var METEOR_FAST_METHODS_INITIAL_LOGGED_IN = ${!!context.userId};
+        </script>`
+      );
     });
-    sink.appendToBody(
-      `<script>var PRELOADED_DATA_METEOR_FAST_METHODS = ${EJSON.stringify(
-        reduceToMethodSubscriptionFormat(cursors)
-      )}</script>`
-    );
   });
 }
-Vent.publish(CHANGES_METHOD_NAME, function publication() {
-  this.on(CHANGES_NAMESPACE, doc => doc);
+Vent.publish(CHANGES_METHOD_NAME, function publication({ namespace }) {
+  this.on(CHANGES_NAMESPACE(namespace), doc => doc);
 });
