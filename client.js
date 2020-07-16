@@ -24,7 +24,7 @@ FastMethods = {
         getCollectionByName(collectionName).rawRemove(docId);
         return;
       }
-      getCollectionByName(collectionName).set(doc?._id, doc);
+      getCollectionByName(collectionName).set(doc?._id, { ...doc, __noReset: true });
     });
   },
 };
