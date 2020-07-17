@@ -32,9 +32,11 @@ export function preloadData(cursorsFunction) {
       });
       sink.appendToBody(
         `<script>
-        var PRELOADED_DATA_METEOR_FAST_METHODS = ${EJSON.stringify(
-          reduceToMethodSubscriptionFormat(cursors)
-        )};
+        var PRELOADED_DATA_METEOR_FAST_METHODS = JSON.parse(
+          unescape("${escape(
+            EJSON.stringify(reduceToMethodSubscriptionFormat(cursors))
+          )}")
+        );
         var METEOR_FAST_METHODS_INITIAL_LOGGED_IN = ${!!context.userId};
         </script>`
       );
