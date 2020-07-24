@@ -1,6 +1,6 @@
 Package.describe({
   name: 'pathable:meteor-fast-methods',
-  version: '0.1.0',
+  version: '0.2.1',
   summary: 'Faster methods with redis and redis-oplog',
 });
 
