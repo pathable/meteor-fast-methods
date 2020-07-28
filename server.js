@@ -26,9 +26,11 @@ export function preloadData(cursorsFunction) {
       const cursors = cursorsFunction.call(context, sink);
 
       cursors.forEach(cursor => {
+        const shouldEmitEvents = !cursor._cursorDescription.options
+          ?.shouldNotEmitEvents;
         Mongo.Collection.__getCollectionByName(
           cursor._getCollectionName()
-        ).shouldEmitEvents = true;
+        ).shouldEmitEvents = shouldEmitEvents;
       });
       sink.appendToBody(
         `<script>
